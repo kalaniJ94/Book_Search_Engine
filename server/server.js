@@ -19,6 +19,7 @@ const PORT = process.env.PORT || 3001;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+
 // if we're in production, serve client/build as static assets
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/build')));
@@ -28,10 +29,10 @@ if (process.env.NODE_ENV === 'production') {
 const startApolloServer = async (typeDefs, resolvers) => {
   await server.start();
   server.applyMiddleware({ app });
-
   db.once("open", () => {
     app.listen(PORT, () => {
       console.log(`Server now running on port ${PORT}!`);
+      console.log(server.graphqlPath);
       console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`)
     });
   });
