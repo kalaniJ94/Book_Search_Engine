@@ -46,29 +46,40 @@ const resolvers = {
       return { token, user };
     },
 
-    saveBook: async (_parent, { userId, bookData }, context) => {
+    saveBook: async (_, { input }, context) => {
       if (context.user) {
         return User.findOneAndUpdate(
-          { _id: userId },
-          { $addToSet: { savedBooks: { book: bookData } } },
+          { _id: context.user._id },
+          { $addToSet: { savedBooks: input } },
           { new: true, runValidators: true }
         );
       }
       throw new AuthenticationError("Please login or register");
     },
 
-    removeBook: async (_parent, { book }, context) => {
-      if (context.user) {
-        const updatedUser = await User.findOneAndUpdate(
-          { _id: context.user._id },
-          { $pull: { savedBooks: book } },
-          { new: true }
-        );
-        return updatedUser;
-      }
-      throw new AuthenticationError("Please login or register");
-    },
+  //   removeBook: async (_parent, { book }, context) => {
+  //     if (context.user) {
+  //       const updatedUser = await User.findOneAndUpdate(
+  //         { _id: context.user._id },
+  //         { $pull: { savedBooks: book } },
+  //         { new: true }
+  //       );
+  //       return updatedUser;
+  //     }
+  //     throw new AuthenticationError("Please login or register");
+  //   },
+  // },
+  removeBook: async (_, { bookId }, context) => {
+    if (context.user) {
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: context.user._id },
+        { $pull: { savedBooks: { bookId } } },  // Use { bookId } as the condition
+        { new: true }
+      );
+      return updatedUser;
+    }
+    throw new AuthenticationError("Please login or register");
   },
+},
 };
-
 module.exports = resolvers;

@@ -1,47 +1,12 @@
-// import React from "react";
 
-// import './App.css';
-// import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
-// import { Outlet } from 'react-router-dom';
-
-// import { setContext } from "@apollo/client/link/context";
-//           import Navbar from './components/Navbar';
-
-
-// const authLink = setContext((_, { headers }) => {
-//   const token = localStorage.getItem("id_token");
-//   return {
-//     headers: {
-//       ...headers,
-//       authorization: token ? `Bearer ${token}` : "",
-//     },
-//   };
-// });
-
-// const client = new ApolloClient({
-//   uri: '/graphql',
-//   cache: new InMemoryCache(),
-// });
-
-
-
-// function App() {
-//   return (
-//     <ApolloProvider client={client}>
-//       <>
-//           <Navbar />
-//           <Outlet />
-
-//         </>
-//     </ApolloProvider>
-//   );
-// }
-
-// export default App;
 import React from "react";
 
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context'
+import { setContext } from '@apollo/client/link/context';
+
+import { onError } from 'apollo-link-error';
+import { ApolloLink } from 'apollo-link';
+
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SearchBooks from "./pages/SearchBooks";
@@ -64,9 +29,20 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    console.log('graphQLErrors', graphQLErrors);
+  }
+  if (networkError) {
+    console.log('networkError', networkError);
+  }
+});
+
+const link = ApolloLink.from([errorLink, authLink.concat(httpLink)]);
+
 const client = new ApolloClient({
   // uri: '/graphql',
-  link: authLink.concat(httpLink),
+  link,
   cache: new InMemoryCache(),
 });
 console.log(client.link);
