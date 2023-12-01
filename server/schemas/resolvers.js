@@ -57,18 +57,6 @@ const resolvers = {
       throw new AuthenticationError("Please login or register");
     },
 
-  //   removeBook: async (_parent, { book }, context) => {
-  //     if (context.user) {
-  //       const updatedUser = await User.findOneAndUpdate(
-  //         { _id: context.user._id },
-  //         { $pull: { savedBooks: book } },
-  //         { new: true }
-  //       );
-  //       return updatedUser;
-  //     }
-  //     throw new AuthenticationError("Please login or register");
-  //   },
-  // },
   removeBook: async (_, { bookId }, context) => {
     if (context.user) {
       const updatedUser = await User.findOneAndUpdate(
