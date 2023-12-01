@@ -47,6 +47,7 @@ const SignupForm = () => {
       username: '',
       email: '',
       password: '',
+      
     });
   };
 
