@@ -8,11 +8,18 @@ const resolvers = {
   Query: {
     me: async (_parent, _args, context) => {
         if (context.user) {
-            const userData = await User.findOne({ _id: context.user._id })
-                .select('-__v -password');
-                // returns everything BUT password
+            // const userData = await User.findOne({ _id: context.user._id })
+            //     .select('-__v -password');
+            //     // returns everything BUT password
   
-            return userData;
+            // return userData;
+            try {
+              const userData = await User.findOne({ _id: context.user._id }).select('-__v -password');
+              return userData;
+            } catch (error) {
+              console.error(error);
+              throw new AuthenticationError("Error fetching user data");
+            }
         }
       throw new AuthenticationError("No user found. Please login or register");
     },
@@ -20,33 +27,71 @@ const resolvers = {
 
   Mutation: {
     addUser: async (parent, { username, email, password }) => {
-      const user = await User.create({ username, email, password });
-      const token = signToken(user);
+      // const user = await User.create({ username, email, password });
+      // const token = signToken(user);
 
-      return { token, user };
+      // return { token, user };
+      try {
+        const user = await User.create({ username, email, password });
+        const token = signToken(user);
+        return { token, user };
+      } catch (error) {
+        console.error(error);
+        throw new AuthenticationError("Error creating user");
+      }
     },
     login: async (_parent, { email, password }) => {
-      console.log(1);
+    //   console.log(1);
+    //   const user = await User.findOne({ email });
+    //   if (!user) {
+    //     throw new AuthenticationError("No user found");
+    //   }
+    //   console.log(2);
+
+    //   const correctPw = await user.isCorrectPassword(password);
+
+    //   if (!correctPw) {
+    //     throw new AuthenticationError("Incorrect Password");
+    //   }
+    //   console.log(3);
+
+    //   const token = signToken(user);
+    //   console.log(token);
+
+    //   return { token, user };
+    // },
+    try {
       const user = await User.findOne({ email });
+
       if (!user) {
         throw new AuthenticationError("No user found");
       }
-      console.log(2);
 
       const correctPw = await user.isCorrectPassword(password);
 
       if (!correctPw) {
         throw new AuthenticationError("Incorrect Password");
       }
-      console.log(3);
 
       const token = signToken(user);
-      console.log(token);
-
       return { token, user };
-    },
+    } catch (error) {
+      console.error(error);
+      throw new AuthenticationError("Error during login");
+    }
+  },
 
     saveBook: async (_, { input }, context) => {
+    //   if (context.user) {
+    //     return User.findOneAndUpdate(
+    //       { _id: context.user._id },
+    //       { $addToSet: { savedBooks: input } },
+    //       { new: true, runValidators: true }
+    //     );
+    //   }
+    //   throw new AuthenticationError("Please login or register");
+    // },
+    try {
       if (context.user) {
         return User.findOneAndUpdate(
           { _id: context.user._id },
@@ -55,19 +100,37 @@ const resolvers = {
         );
       }
       throw new AuthenticationError("Please login or register");
-    },
+    } catch (error) {
+      console.error(error);
+      throw new AuthenticationError("Error saving book");
+    }
+  },
 
   removeBook: async (_, { bookId }, context) => {
-    if (context.user) {
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: context.user._id },
-        { $pull: { savedBooks: { bookId } } },  // Use { bookId } as the condition
-        { new: true }
-      );
-      return updatedUser;
-    }
-    throw new AuthenticationError("Please login or register");
-  },
+    // if (context.user) {
+    //   const updatedUser = await User.findOneAndUpdate(
+    //     { _id: context.user._id },
+    //     { $pull: { savedBooks: { bookId } } },  // Use { bookId } as the condition
+    //     { new: true }
+    //   );
+    //   return updatedUser;
+    // }
+    // throw new AuthenticationError("Please login or register");
+    try {
+      if (context.user) {
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $pull: { savedBooks: { bookId } } },
+          { new: true }
+        );
+        return updatedUser;
+      }
+      throw new AuthenticationError("Please login or register");
+    } catch (error) {
+      console.error(error);
+      throw new AuthenticationError("Error removing book");
+  }
 },
+  },
 };
 module.exports = resolvers;
