@@ -19,6 +19,12 @@ const PORT = process.env.PORT || 3001;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+
+app.get("/*", function (req, res) {
+  res.sendFile(path.join(__dirname, "../client/dist", "index.html"))
+});
 
 
 // create a new instance of Apollo Server using GraphQL schema
