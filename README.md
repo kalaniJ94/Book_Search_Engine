@@ -4,6 +4,8 @@
 
 This was an extremely fun challenge. The topic of which was to learn how to translate a working app's routing systems from a RESTful system, to one that uses GraphQL to fulfill it's needs. I learned alot in this challenge, and I appreciated the opportunity to get a really complete look at GraphQL's 'under the hood' functionality. 
 
+I was advised by TA's to submit this project using heroku instead of Render, as myself and others were having problems getting that site to work correctly with MONGO. 
+
 ## Table of Contents (Optional)
 
 
